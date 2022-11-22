@@ -1,135 +1,128 @@
-import React, {useState} from 'react';
-import '../styles/App.css'
+import React from "react";
 
-function App() {
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      name: "",
+      email: "",
+      gender: "",
+      phoneNumber: "",
+      password: "",
+      error: ""
+    };
+  }
+  render() {
+    const handleNameChange = (e) => {
+      this.setState({
+        name: e.target.value
+      });
+    };
+    const handleEmailChange = (e) => {
+      this.setState({
+        email: e.target.value
+      });
+    };
+    const handlePhoneChange = (e) => {
+      this.setState({
+        phoneNumber: e.target.value
+      });
+    };
+    const handleGenderChange = (e) => {
+      this.setState({
+        gender: e.target.value
+      });
+    };
+    const handlePasswordChange = (e) => {
+      this.setState({
+        password: e.target.value
+      });
+    };
 
-    const [getForm,setForm] = useState({
-        name:'',
-        email:'',
-        gender:'male',
-        phoneNumber:'',
-        password:''
-    });
-
-    const [getError,setError] = useState("");
-
-    const[username,setusername] =useState("");
-
-    const onChangeHandler=(event)=>{
-        setForm({
-          ...getForm,
-          [event.target.name]:event.target.value
+    const submitForm = (e) => {
+      e.preventDefault();
+      const pattern = /^[0-9A-Z-a-z- ]+$/;
+      const patternNum = /^[0-9]+$/;
+    if(this.state.name == "" || this.state.email == "" || this.state.gender == "" || this.state.password == "" || this.state.phoneNumber == ""){
+        this.setState({
+          error:"All fields are mandatory"
         })
-    }
-
-    const getErrorHandler=()=>{
-         
-      if(!getForm.name && !getForm.email && !getForm.phoneNumber && !getForm.password){
-        setError('All fields are mandatory');
-        return true;
       }
-
-      if(!getForm.name){
-        setError('Name Error');
-        return true;
+      else if (!pattern.test(this.state.name)) {
+        this.setState({
+          error: "Name is not alphanumeric"
+        });
+      }else if (!this.state.email.includes("@")) {
+        this.setState({
+          error: "Email must contain @"
+        });
+      }else if (
+        !this.state.gender === "male" ||
+        !this.state.gender === "female" ||
+        !this.state.gender === "others"
+      ) {
+        this.setState({
+          error: "Please identify as male, female or others"
+        });
+      }else if (this.state.password.length < 6) {
+        this.setState({
+          error: "Password must contain atleast 6 letters"
+        });
+      }else{
+        alert("successful submit")
       }
+     console.log(this.state.error)
+    };
+    return (
+      <>
+        <form onSubmit={submitForm}>
+          <input
+            placeholder="name"
+            data-testid = 'name'
+            value={this.state.name}
+            onChange={handleNameChange}
+            type="text"
+          />
+          <input
+            placeholder="email"
+            data-testid = 'email'
+            value={this.state.email}
+            onChange={handleEmailChange}
+            type="email"
 
-      if(!getForm.email){
-        setError('Email Error');
-        return true;
-      }
+          />
+          <select
+            data-testid = 'gender'
+            value={(this.state.gender = "male")}
+            onChange={handleGenderChange}
+          >
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="others">Others</option>
+          </select>
+          <input
+            placeholder="phoneNumber"
+            data-testid = 'phoneNumber'
+            value={this.state.phoneNumber}
+            onChange={handlePhoneChange}
+            type="number"
 
-      if(!getForm.phoneNumber){
-        setError('Phone Number Error');
-        return true;
-      }
+          />
+          <input
+            placeholder="password"
+            data-testid = 'password'
+            value={this.state.password}
+            onChange={handlePasswordChange}
+            type='password'
 
-      if(!getForm.password){
-        setError('Password Error');
-        return true;
-      }
-
-      if(!/^[a-zA-z0-9\s]*$/.test(getForm.name)){
-        setError('Name is not alphanumeric');
-        return true;
-      }
-
-      if(!(getForm.email).includes("@")){
-        setError('Email must contain @');
-        return true;
-      }
-  
-      if(!/^(male|female|other)$/.test(getForm.gender)){
-        setError(' Please identify as male, female or others');
-        return true;
-      }
-
-      if(!/^[0-9]*$/.test(getForm.phoneNumber)){
-        setError('Phone Number must contain only numbers');
-        return true;
-      }
-
-      if(getForm.password.length<=6){
-        setError('Password must contain atleast 6 letters');
-        return true;
-      }
-
-
-          return false;
-    }
-
-    const onSubmitHandler=(event)=>{
-      setError('');
-      setusername('');
-       event.preventDefault();
-       if(getErrorHandler()){
-            return true;
-       }
-       let username = getForm.email.split("@")[0];
-       setusername(`Hello ${username}`);
-       clearInputs();
-
-    }
-
-    function clearInputs(){
-      setForm({
-        name:'',
-        email:'',
-        gender:'male',
-        phoneNumber:'',
-        password:''
-      })
-    }
-
-
-   return (<div>
-        <form>
-          <div>
-            Name:<input type="text" value={getForm.name} onChange={onChangeHandler} data-testid='name' name="name"/>
-          </div>
-          <div>
-          Email address :<input type="email"  value={getForm.email} onChange={onChangeHandler} data-testid='email' name="email"/>
-          </div>
-          <div>
-            Gender:<select data-testid='gender' value={getForm.gender} onChange={onChangeHandler} name="gender">
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Others</option>
-            </select>
-          </div>
-          <div>
-            Phone:<input type="number"  value={getForm.phoneNumber} onChange={onChangeHandler} data-testid = 'phoneNumber' name="phoneNumber"/>
-          </div>
-          <div>
-            Password:<input type="password" value={getForm.password} onChange={onChangeHandler} data-testid='password' name="password"/>
-          </div>
-          <div>
-            <button data-testid='submit' onClick={onSubmitHandler}>Submit</button>
-          </div>
-          {getError}
-          {username && <h1>{username}</h1>}
+          />
+          <button type="submit" data-testid = 'submit'>Submit Form</button>
         </form>
-   </div>)
+        {this.state.error ? (
+          <div style={{ color: "red" }}>{this.state.error}</div>
+        ) : null}
+      </>
+    );
+  }
 }
-
 export default App;
